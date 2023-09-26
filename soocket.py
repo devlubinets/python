@@ -1,16 +1,16 @@
 import socket
 
-HOST = "127.0.0.1"  # Localhost (IPv4)
-PORT = 80
+mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+mysock.connect(("data.pr4e.org", 80))
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST, PORT))
-    s.listen()
-    conn, addr = s.accept()
-    with conn:
-        print(f"Connected by {addr}")
-        while True:
-            data = conn.recv(45000)
-            if not data:
-                break
-            conn.sendall(data)
+cmd = 'GET http://data.pr4e.org/romeo.txt HTTP/1.0\r\n\r\n'.encode()
+mysock.send(cmd)
+
+while True:
+    data = mysock.recv(512)
+    if len(data) < 1:
+        break
+    print(data)
+    print(data.decode())
+
+mysock.close()
